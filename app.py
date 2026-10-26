@@ -10,24 +10,24 @@ st.set_page_config(
 )
 
 st.title("Khanh Hoa Photobooth - Haaland & MCK")
-st.write("Hay dung webcam chụp lần lượt 4 bức ảnh để ghép vào khung!")
+st.write("Hãy dùng webcam chụp lần lượt 4 bức ảnh để ghép vào khung!")
 
 col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("Khung chụp 1")
-    cam1 = st.camera_input("Anh 1 (Tren trai)")
-    cam2 = st.camera_input("Anh 2 (Duoi trai)")
+    cam1 = st.camera_input("Ảnh 1 (Trên trái)")
+    cam2 = st.camera_input("Ảnh 2 (Dưới trái)")
 
 with col2:
     st.subheader("Khung chụp 2")
-    cam3 = st.camera_input("Anh 3 (Tren phai)")
-    cam4 = st.camera_input("Anh 4 (Duoi phai)")
+    cam3 = st.camera_input("Ảnh 3 (Trên phải)")
+    cam4 = st.camera_input("Ảnh 4 (Dưới phải)")
 
 captured_list = [cam1, cam2, cam3, cam4]
 
 if all(captured_list):
-    if st.button("Ghep Anh Vao Khung Ngay", type="primary"):
+    if st.button("Ghép Ảnh Vào Khung Ngay", type="primary"):
         try:
             webcam_images = []
             for f in captured_list:
@@ -38,30 +38,32 @@ if all(captured_list):
             template_path = os.path.join(current_dir, "khung.png")
             
             if not os.path.exists(template_path):
-                st.error("Khong tim thay file khung.png tren GitHub!")
+                st.error("Không tìm thấy file khung.png trong thư mục!")
             else:
                 base_image = Image.open(template_path).convert("RGBA")
                 
+                # Tọa độ chuẩn 4 ô chữ nhật đứng (y_min, x_min, y_max, x_max) khớp hoàn toàn với khung mới
                 box_coords = [
-                   # Tọa độ mới đã được hạ thấp và căn chỉnh chuẩn xác vào 4 khung neon trong ảnh
-            # Tọa độ 4 ô chữ nhật đứng (y_min, x_min, y_max, x_max) chuẩn xác cho mẫu khung mới:
-# Tọa độ 4 ô trống khớp hoàn toàn với vị trí khung trong suốt mới:
-
-    (275, 305, 475, 500),  # Ô trên - trái
-    (275, 560, 475, 755),  # Ô trên - phải
-    (495, 305, 695, 500),  # Ô dưới - trái
-    (495, 560, 695, 755)   # Ô dưới - phải
+                    (275, 305, 475, 500),  # Ô trên - trái
+                    (275, 560, 475, 755),  # Ô trên - phải
+                    (495, 305, 695, 500),  # Ô dưới - trái
+                    (495, 560, 695, 755)   # Ô dưới - phải
                 ]
 
                 for i, img in enumerate(webcam_images):
-                    box = box_coords[i]
-                    bw = box[2] - box[0]
-                    bh = box[3] - box[1]
+                    y_min, x_min, y_max, x_max = box_coords[i]
+                    
+                    # Tính chính xác chiều rộng và chiều cao của khung hình chữ nhật
+                    bw = x_max - x_min
+                    bh = y_max - y_min
 
+                    # Fit ảnh webcam theo đúng tỉ lệ và kích thước của ô khung
                     img_fitted = ImageOps.fit(img, (bw, bh), method=Image.Resampling.LANCZOS)
-                    base_image.paste(img_fitted, (box[0], box[1]))
+                    
+                    # Dán ảnh vào đúng tọa độ (x_min, y_min) trên khung nền
+                    base_image.paste(img_fitted, (x_min, y_min))
 
-                st.success("Ghep anh thanh cong!")
+                st.success("Ghép ảnh thành công!")
                 st.image(base_image, caption="Photobooth của bạn", use_container_width=True)
                 
                 buf = io.BytesIO()
@@ -69,7 +71,7 @@ if all(captured_list):
                 byte_im = buf.getvalue()
 
                 st.download_button(
-                    label="Tai anh ve may",
+                    label="Tải ảnh về máy",
                     data=byte_im,
                     file_name="photobooth.png",
                     mime="image/png",
@@ -77,4 +79,4 @@ if all(captured_list):
                 )
 
         except Exception as e:
-            st.error(f"Loi: {e}")
+            st.error(f"Lỗi: {e}")
