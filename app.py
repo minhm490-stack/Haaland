@@ -50,36 +50,4 @@ if all(captured_list):
 
             try:
                 font_title = ImageFont.truetype("DejaVuSans-Bold.ttf", 26)
-                font_sub = ImageFont.truetype("DejaVuSans-Bold.ttf", 15)
-            except IOError:
-                font_title = font_sub = ImageFont.load_default()
-
-            # --- TIÊU ĐỀ ---
-            draw.text((canvas_w // 2, 45), "💖 KHÁNH HOÀ PHOTOCARD 💖", fill=text_color, font=font_title, anchor="mm")
-            draw.text((canvas_w // 2, 75), "🌸 Memories of You & Me 🌸", fill=(220, 150, 170, 255), font=font_sub, anchor="mm")
-
-            # --- SẮP XẾP 4 ẢNH THÀNH LƯỚI 2x2 (VUÔNG) ---
-            grid_w, grid_h = 250, 220
-            start_x = 45
-            start_y = 110
-            gap_x = 10
-            gap_y = 10
-
-            positions = [
-                (start_x, start_y),
-                (start_x + grid_w + gap_x, start_y),
-                (start_x, start_y + grid_h + gap_y),
-                (start_x + grid_w + gap_x, start_y + grid_h + gap_y)
-            ]
-
-            for idx, img in enumerate(webcam_images):
-                gx, gy = positions[idx]
-                
-                draw.rectangle([(gx, gy), (gx + grid_w, gy + grid_h)], fill=frame_bg, outline=border_color, width=3)
-                
-                img_resized = ImageOps.fit(img, (grid_w - 16, grid_h - 16), method=Image.Resampling.LANCZOS)
-                canvas.paste(img_resized, (gx + 8, gy + 8))
-
-            # --- PHẦN FOOTER ---
-            footer_y = canvas_h - 60
-            draw.text((canvas_w // 2, footer_y), "✨ Made with love for Khánh Hoà ✨", fill=text_color, font=font
+                font_sub
