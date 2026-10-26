@@ -77,4 +77,69 @@ if all(captured_list):
                 (100, 150, 470, 680),
                 (530, 150, 900, 680),
                 (100, 710, 470, 1240),
-                (530, 710,
+                (530, 710, 900, 1240)
+            ]
+
+            # 3. Fit ảnh webcam vào 4 ô với khung viền bắt mắt
+            for i, img in enumerate(webcam_images):
+                box = box_coords[i]
+                bw = box[2] - box[0]
+                bh = box[3] - box[1]
+
+                img_fitted = ImageOps.fit(img, (bw - 24, bh - 24), method=Image.Resampling.LANCZOS)
+                
+                draw.rectangle([box[0], box[1], box[2], box[3]], fill=(20, 20, 40, 200), outline=(255, 192, 203, 255), width=6)
+                base_image.paste(img_fitted, (box[0] + 12, box[1] + 12), img_fitted)
+
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+
+            # 4. Xóa nền và chèn Bạch Tuộc vào giữa
+            octopus_path = os.path.join(current_dir, "bach_tuoc.png")
+            if os.path.exists(octopus_path):
+                octo_img = Image.open(octopus_path).convert("RGBA")
+                octo_img = remove_white_background(octo_img)
+                octo_w = 210
+                octo_h = int(octo_w * octo_img.height / octo_img.width)
+                octo_img = octo_img.resize((octo_w, octo_h), Image.Resampling.LANCZOS)
+                
+                octo_x = (bg_width - octo_w) // 2
+                octo_y = (150 + 680 + 710 - octo_h) // 2
+                base_image.paste(octo_img, (octo_x, octo_y), octo_img)
+
+            # 5. Xóa nền và chèn Sticker 1 (Góc trên trái)
+            sticker1_path = os.path.join(current_dir, "sticker1.png")
+            if os.path.exists(sticker1_path):
+                stk1 = Image.open(sticker1_path).convert("RGBA")
+                stk1 = remove_white_background(stk1)
+                stk1_w = 170
+                stk1_h = int(stk1_w * stk1.height / stk1.width)
+                stk1 = stk1.resize((stk1_w, stk1_h), Image.Resampling.LANCZOS)
+                base_image.paste(stk1, (55, 65), stk1)
+
+            # 6. Xóa nền và chèn Sticker 2 (Góc dưới phải)
+            sticker2_path = os.path.join(current_dir, "sticker2.png")
+            if os.path.exists(sticker2_path):
+                stk2 = Image.open(sticker2_path).convert("RGBA")
+                stk2 = remove_white_background(stk2)
+                stk2_w = 170
+                stk2_h = int(stk2_w * stk2.height / stk2.width)
+                stk2 = stk2.resize((stk2_w, stk2_h), Image.Resampling.LANCZOS)
+                base_image.paste(stk2, (bg_width - stk2_w - 55, bg_height - stk2_h - 65), stk2)
+
+            st.success("🌟 Tạo ảnh siêu phẩm Xanh - Hồng thành công!")
+            st.image(base_image, caption="Thành phẩm Photobooth Xanh Hồng Xịn Xò", use_container_width=True)
+            
+            buf = io.BytesIO()
+            base_image.convert("RGB").save(buf, format="PNG")
+            byte_im = buf.getvalue()
+
+            st.download_button(
+                label="📥 Tải ảnh Photobooth về máy",
+                data=byte_im,
+                file_name="khanhhoa_cyan_pink_photobooth.png",
+                mime="image/png",
+                type="primary"
+            )
+
+        except Exception as e:
+            st.error(f"Đã xảy ra lỗi: {e}")
