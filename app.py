@@ -120,7 +120,7 @@ if all(captured_list):
             text = "CHUC MUNG SINH NHAT KHANH HOA"
             try:
                 # Tăng kích thước font lên 36 để chữ thật to và nổi bật
-                font = ImageFont.truetype("DejaVuSans-Bold.ttf", 36)
+                font = ImageFont.truetype("DejaVuSans-Bold.ttf", 400)
             except:
                 font = ImageFont.load_default()
 
