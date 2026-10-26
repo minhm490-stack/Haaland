@@ -43,10 +43,12 @@ if all(captured_list):
                 base_image = Image.open(template_path).convert("RGBA")
                 
                 box_coords = [
-                    (312, 238, 497, 525),
-                    (312, 574, 497, 860),
-                    (536, 238, 722, 525),
-                    (536, 574, 722, 860)
+                   # Tọa độ mới đã được hạ thấp và căn chỉnh chuẩn xác vào 4 khung neon trong ảnh
+            
+                    (355, 345, 595, 555), # Khung trên trái
+                    (355, 595, 595, 805), # Khung trên phải
+                    (620, 345, 860, 555), # Khung dưới trái
+                    (620, 595, 860, 805)  # Khung dưới phải
                 ]
 
                 for i, img in enumerate(webcam_images):
