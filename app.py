@@ -34,20 +34,18 @@ if all(captured_list):
                 f.seek(0)
                 webcam_images.append(Image.open(f).convert("RGB"))
 
-            # --- CẤU HÌNH KHUNG VUÔNG & TÔNG MÀU HỒNG PASTEL (THEO ẢNH 2) ---
+            # --- CẤU HÌNH KHUNG VUÔNG & TÔNG MÀU HỒNG PASTEL ---
             canvas_w = 600
-            canvas_h = 750  # Kích thước khung tổng thể cân đối dạng dọc/vuông
+            canvas_h = 750  
             
-            # Tông màu hồng pastel & trắng hoa tulip
-            bg_color = (255, 245, 247, 255)       # Hồng phấn rất nhạt làm nền
-            border_color = (248, 187, 208, 255)   # Hồng pastel ngọt ngào
-            frame_bg = (255, 255, 255, 255)       # Nền trắng cho khung ảnh nhỏ
-            text_color = (216, 112, 147, 255)     # Hồng đậm vintage
+            bg_color = (255, 245, 247, 255)       
+            border_color = (248, 187, 208, 255)   
+            frame_bg = (255, 255, 255, 255)       
+            text_color = (216, 112, 147, 255)     
 
             canvas = Image.new("RGBA", (canvas_w, canvas_h), bg_color)
             draw = ImageDraw.Draw(canvas)
 
-            # Vẽ viền ngoài trang trí
             draw.rectangle([(15, 15), (canvas_w - 15, canvas_h - 15)], outline=border_color, width=4)
 
             try:
@@ -58,4 +56,30 @@ if all(captured_list):
 
             # --- TIÊU ĐỀ ---
             draw.text((canvas_w // 2, 45), "💖 KHÁNH HOÀ PHOTOCARD 💖", fill=text_color, font=font_title, anchor="mm")
-            draw.text((canvas_w // 2, 75), "🌸 Memories of You & Me 🌸", fill=(220, 150, 17
+            draw.text((canvas_w // 2, 75), "🌸 Memories of You & Me 🌸", fill=(220, 150, 170, 255), font=font_sub, anchor="mm")
+
+            # --- SẮP XẾP 4 ẢNH THÀNH LƯỚI 2x2 (VUÔNG) ---
+            grid_w, grid_h = 250, 220
+            start_x = 45
+            start_y = 110
+            gap_x = 10
+            gap_y = 10
+
+            positions = [
+                (start_x, start_y),
+                (start_x + grid_w + gap_x, start_y),
+                (start_x, start_y + grid_h + gap_y),
+                (start_x + grid_w + gap_x, start_y + grid_h + gap_y)
+            ]
+
+            for idx, img in enumerate(webcam_images):
+                gx, gy = positions[idx]
+                
+                draw.rectangle([(gx, gy), (gx + grid_w, gy + grid_h)], fill=frame_bg, outline=border_color, width=3)
+                
+                img_resized = ImageOps.fit(img, (grid_w - 16, grid_h - 16), method=Image.Resampling.LANCZOS)
+                canvas.paste(img_resized, (gx + 8, gy + 8))
+
+            # --- PHẦN FOOTER ---
+            footer_y = canvas_h - 60
+            draw.text((canvas_w // 2, footer_y), "✨ Made with love for Khánh Hoà ✨", fill=text_color, font=font
