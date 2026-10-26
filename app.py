@@ -46,7 +46,7 @@ if all(captured_list):
                    # Tọa độ mới đã được hạ thấp và căn chỉnh chuẩn xác vào 4 khung neon trong ảnh
             # Tọa độ 4 ô chữ nhật đứng (y_min, x_min, y_max, x_max) chuẩn xác cho mẫu khung mới:
 # Tọa độ 4 ô trống khớp hoàn toàn với vị trí khung trong suốt mới:
-box_coords = [
+
     (275, 305, 475, 500),  # Ô trên - trái
     (275, 560, 475, 755),  # Ô trên - phải
     (495, 305, 695, 500),  # Ô dưới - trái
