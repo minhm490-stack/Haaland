@@ -112,11 +112,11 @@ if all(captured_list):
             draw.rectangle([(30, 30), (bg_width - 30, bg_height - 30)], outline=(255, 255, 255, 255), width=8)
             draw.rectangle([(42, 42), (bg_width - 42, bg_height - 42)], outline=(255, 105, 180, 255), width=4)
 
-            # Banner tiêu đề ở trên được mở rộng chiều cao để chứa 2 dòng chữ cực to
-            banner_box = (50, 25, 950, 155)
-            draw.rectangle([banner_box[0], banner_box[1], banner_box[2], banner_box[3]], fill=(255, 255, 255, 255), outline=(255, 105, 180, 255), width=6)
+            # --- BANNER TIÊU ĐỀ THIẾT KẾ VỪA KHÍT & CÂN ĐỐI ---
+            banner_box = (60, 35, 940, 150)
+            draw.rectangle([banner_box[0], banner_box[1], banner_box[2], banner_box[3]], fill=(255, 255, 255, 250), outline=(255, 105, 180, 255), width=5)
             
-            # Tải font lớn (kích thước 50 siêu to)
+            # Tải font chữ lớn (cỡ 44) để chữ vừa to vừa đẹp
             font = None
             font_paths = [
                 "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
@@ -126,7 +126,7 @@ if all(captured_list):
             ]
             for fp in font_paths:
                 try:
-                    font = ImageFont.truetype(fp, 50)
+                    font = ImageFont.truetype(fp, 44)
                     break
                 except:
                     continue
@@ -134,33 +134,32 @@ if all(captured_list):
             if font is None:
                 font = ImageFont.load_default()
 
-            # Chia thành 2 dòng để chữ cực kỳ lớn và rõ ràng
-            line1 = "CHUC MUNG SINH NHAT"
+            # Nội dung 2 dòng căn giữa tuyệt đối trong banner
+            line1 = "HAPPY BIRTHDAY"
             line2 = "KHANH HOA"
 
-            # Căn giữa dòng 1
             bbox1 = draw.textbbox((0, 0), line1, font=font)
             w1 = bbox1[2] - bbox1[0]
             x1 = banner_box[0] + ((banner_box[2] - banner_box[0]) - w1) // 2
-            y1 = banner_box[1] + 15
+            y1 = banner_box[1] + 12
 
-            # Căn giữa dòng 2
             bbox2 = draw.textbbox((0, 0), line2, font=font)
             w2 = bbox2[2] - bbox2[0]
             x2 = banner_box[0] + ((banner_box[2] - banner_box[0]) - w2) // 2
-            y2 = y1 + 52
+            y2 = y1 + 46
 
-            # Đổ bóng và vẽ chữ màu hồng đậm
-            draw.text((x1 + 2, y1 + 2), line1, fill=(200, 200, 200, 255), font=font)
+            # Đổ bóng và vẽ chữ màu hồng đậm rực rỡ
+            draw.text((x1 + 2, y1 + 2), line1, fill=(220, 220, 220, 255), font=font)
             draw.text((x1, y1), line1, fill=(255, 20, 147, 255), font=font)
 
-            draw.text((x2 + 2, y2 + 2), line2, fill=(200, 200, 200, 255), font=font)
+            draw.text((x2 + 2, y2 + 2), line2, fill=(220, 220, 220, 255), font=font)
             draw.text((x2, y2), line2, fill=(255, 20, 147, 255), font=font)
+            # --------------------------------------------------
 
             # Banner dưới trang trí
             draw.rectangle([(250, 1180), (750, 1230)], fill=(255, 255, 255, 230), outline=(255, 105, 180, 255), width=3)
 
-            # 4. Tọa độ 4 ô chứa ảnh webcam
+            # 4. Tọa độ 4 ô chứa ảnh webcam (đã nhường chỗ cho banner to ở trên)
             box_coords = [
                 (100, 165, 470, 680),   # Ô 1: Trên - Trái
                 (530, 165, 900, 680),   # Ô 2: Trên - Phải
@@ -214,8 +213,8 @@ if all(captured_list):
                 stk2 = stk2.resize((stk2_w, stk2_h), Image.Resampling.LANCZOS)
                 base_image.paste(stk2, (bg_width - stk2_w - 55, bg_height - stk2_h - 65), stk2)
 
-            st.success("🌟 Tạo siêu phẩm Photobooth chữ cực to thành công!")
-            st.image(base_image, caption="Thành phẩm Photobooth Chúc Mừng Sinh Nhật Khánh Hoà", use_container_width=True)
+            st.success("🌟 Tạo siêu phẩm Photobooth thành công!")
+            st.image(base_image, caption="Thành phẩm Photobooth Happy Birthday Khánh Hoà", use_container_width=True)
             
             buf = io.BytesIO()
             base_image.convert("RGB").save(buf, format="PNG")
