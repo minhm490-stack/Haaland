@@ -4,47 +4,44 @@ import streamlit as st
 from PIL import Image, ImageOps
 
 st.set_page_config(
-    page_title="Khánh Hoà Photobooth - Haaland & MCK", 
+    page_title="Khanh Hoa Photobooth", 
     page_icon="🔥", 
     layout="centered"
 )
 
-st.title("🔥 Khánh Hoà Photobooth - Haaland & MCK Edition 🔥")
-st.write("Hãy dùng webcam chụp lần lượt **4 bức ảnh** để ghép vào khung siêu ngầu nhé!")
+st.title("Khanh Hoa Photobooth - Haaland & MCK")
+st.write("Hay dung webcam chụp lần lượt 4 bức ảnh để ghép vào khung!")
 
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("📸 Khung chụp 1")
-    cam1 = st.camera_input("Ảnh 1 (Ô trên trái)")
-    cam2 = st.camera_input("Ảnh 2 (Ô dưới trái)")
+    st.subheader("Khung chụp 1")
+    cam1 = st.camera_input("Anh 1 (Tren trai)")
+    cam2 = st.camera_input("Anh 2 (Duoi trai)")
 
 with col2:
-    st.subheader("📸 Khung chụp 2")
-    cam3 = st.camera_input("Ảnh 3 (Ô trên phải)")
-    cam4 = st.camera_input("Ảnh 4 (Ô dưới phải)")
+    st.subheader("Khung chụp 2")
+    cam3 = st.camera_input("Anh 3 (Tren phai)")
+    cam4 = st.camera_input("Anh 4 (Duoi phai)")
 
 captured_list = [cam1, cam2, cam3, cam4]
 
 if all(captured_list):
-    if st.button("✨ Ghép Ảnh Vào Khung Ngay", type="primary"):
+    if st.button("Ghep Anh Vao Khung Ngay", type="primary"):
         try:
-            # 1. Đọc 4 ảnh từ webcam
             webcam_images = []
             for f in captured_list:
                 f.seek(0)
                 webcam_images.append(Image.open(f).convert("RGBA"))
 
-            # 2. Mở file khung nền
             current_dir = os.path.dirname(os.path.abspath(__file__))
             template_path = os.path.join(current_dir, "khung.png")
             
             if not os.path.exists(template_path):
-                st.error("⚠️ Không tìm thấy file `khung.png` trên GitHub! Hãy kiểm tra lại tên file.")
+                st.error("Khong tim thay file khung.png tren GitHub!")
             else:
                 base_image = Image.open(template_path).convert("RGBA")
                 
-                # 3. Tọa độ chính xác cho 4 ô trống
                 box_coords = [
                     (312, 238, 497, 525),
                     (312, 574, 497, 860),
@@ -52,7 +49,6 @@ if all(captured_list):
                     (536, 574, 722, 860)
                 ]
 
-                # 4. Fit và dán từng ảnh vào đúng ô
                 for i, img in enumerate(webcam_images):
                     box = box_coords[i]
                     bw = box[2] - box[0]
@@ -61,18 +57,20 @@ if all(captured_list):
                     img_fitted = ImageOps.fit(img, (bw, bh), method=Image.Resampling.LANCZOS)
                     base_image.paste(img_fitted, (box[0], box[1]))
 
-                # 5. Hiển thị kết quả
-                st.success("✨ Ghép ảnh vào khung thành công xuất sắc!")
-                st.image(base_image, caption="Khung Photobooth của bạn", use_container_width=True)
+                st.success("Ghep anh thanh cong!")
+                st.image(base_image, caption="Photobooth của bạn", use_container_width=True)
                 
-                # Nút tải ảnh
                 buf = io.BytesIO()
                 base_image.convert("RGB").save(buf, format="PNG")
                 byte_im = buf.getvalue()
 
                 st.download_button(
-                    label="📥 Tải ảnh Photobooth về máy",
+                    label="Tai anh ve may",
                     data=byte_im,
-                    file_name="khanhhoa_graffiti_photobooth.png",
+                    file_name="photobooth.png",
                     mime="image/png",
-                    type="primary
+                    type="primary"
+                )
+
+        except Exception as e:
+            st.error(f"Loi: {e}")
