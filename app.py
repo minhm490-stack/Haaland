@@ -44,11 +44,11 @@ if all(captured_list):
                 
                 box_coords = [
                    # Tọa độ mới đã được hạ thấp và căn chỉnh chuẩn xác vào 4 khung neon trong ảnh
-            
-                    (355, 345, 595, 555), # Khung trên trái
-                    (355, 595, 595, 805), # Khung trên phải
-                    (620, 345, 860, 555), # Khung dưới trái
-                    (620, 595, 860, 805)  # Khung dưới phải
+            # Tọa độ 4 ô chữ nhật đứng (y_min, x_min, y_max, x_max) chuẩn xác cho mẫu khung mới:
+    (275, 230, 495, 500),  # Ô trên - trái
+    (275, 520, 495, 790),  # Ô trên - phải
+    (530, 230, 750, 500),  # Ô dưới - trái
+    (530, 520, 750, 790)   # Ô dưới - phải
                 ]
 
                 for i, img in enumerate(webcam_images):
