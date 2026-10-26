@@ -112,19 +112,18 @@ if all(captured_list):
             draw.rectangle([(30, 30), (bg_width - 30, bg_height - 30)], outline=(255, 255, 255, 255), width=8)
             draw.rectangle([(42, 42), (bg_width - 42, bg_height - 42)], outline=(255, 105, 180, 255), width=4)
 
-            # Banner tiêu đề ở trên chứa chữ "CHUC MUNG SINH NHAT KHANH HOA"
-            banner_box = (100, 45, 900, 115)
-            draw.rectangle([banner_box[0], banner_box[1], banner_box[2], banner_box[3]], fill=(255, 255, 255, 240), outline=(255, 105, 180, 255), width=4)
+            # Banner tiêu đề ở trên to bản hơn để chứa chữ cỡ lớn
+            banner_box = (60, 40, 940, 130)
+            draw.rectangle([banner_box[0], banner_box[1], banner_box[2], banner_box[3]], fill=(255, 255, 255, 240), outline=(255, 105, 180, 255), width=5)
             
-            # Căn chỉnh chữ cân đối chính giữa banner
+            # Căn chỉnh chữ to rõ và căn giữa tuyệt đối
             text = "CHUC MUNG SINH NHAT KHANH HOA"
             try:
-                # Tải font chữ hệ thống hoặc mặc định, tăng kích thước để chữ đầy đặn
-                font = ImageFont.truetype("DejaVuSans-Bold.ttf", 26)
+                # Tăng kích thước font lên 36 để chữ thật to và nổi bật
+                font = ImageFont.truetype("DejaVuSans-Bold.ttf", 36)
             except:
                 font = ImageFont.load_default()
 
-            # Tính toán kích thước chữ để căn giữa tuyệt đối theo chiều ngang và dọc
             bbox = draw.textbbox((0, 0), text, font=font)
             text_w = bbox[2] - bbox[0]
             text_h = bbox[3] - bbox[1]
