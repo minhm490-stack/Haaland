@@ -42,11 +42,12 @@ if all(captured_list):
             else:
                 base_image = Image.open(template_path).convert("RGBA")
                 
+                # Tọa độ mới đã được mở rộng và căn chỉnh chuẩn xác cho 4 ô trống lớn
                 box_coords = [
-                    (247, 270, 485, 492),
-                    (521, 270, 759, 492),
-                    (247, 532, 485, 754),
-                    (521, 532, 759, 754)
+                    (226, 271, 484, 514),  # Ô 1: Trên - Trái
+                    (516, 271, 774, 514),  # Ô 2: Trên - Phải
+                    (226, 532, 484, 775),  # Ô 3: Dưới - Trái
+                    (516, 532, 774, 775)   # Ô 4: Dưới - Phải
                 ]
 
                 for i, img in enumerate(webcam_images):
