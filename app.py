@@ -114,31 +114,29 @@ if all(captured_list):
 
             current_dir = os.path.dirname(os.path.abspath(__file__))
 
-            # --- CHÈN BANNER ẢNH CHỮ VÀO GIỮA KHUNG PHÍA TRÊN (ĐÃ TỐI ƯU 720 PIXEL) ---
+            # --- CHÈN BANNER ẢNH CHỮ VÀO GIỮA KHUNG PHÍA TRÊN (ĐÃ THU NHỎ 660 PIXEL) ---
             banner_path = os.path.join(current_dir, "banner.png")
             if os.path.exists(banner_path):
                 banner_img = Image.open(banner_path).convert("RGBA")
-                # Thu nhỏ chiều rộng banner xuống 720 pixel để hiển thị cân đối hoàn hảo
-                banner_w = 720
+                banner_w = 660
                 banner_h = int(banner_w * banner_img.height // banner_img.width)
                 banner_img = banner_img.resize((banner_w, banner_h), Image.Resampling.LANCZOS)
                 
-                # Căn giữa tuyệt đối theo chiều ngang và đặt cách đỉnh 48 pixel
                 banner_x = (bg_width - banner_w) // 2
-                banner_y = 48
+                banner_y = 50
                 
                 base_image.paste(banner_img, (banner_x, banner_y), banner_img)
             else:
-                draw.rectangle([(140, 48, 860, 145)], fill=(255, 255, 255, 250), outline=(255, 105, 180, 255), width=5)
+                draw.rectangle([(170, 50, 830, 145)], fill=(255, 255, 255, 250), outline=(255, 105, 180, 255), width=5)
             # -------------------------------------------------------------------------
 
             # Banner dưới trang trí
             draw.rectangle([(250, 1180), (750, 1230)], fill=(255, 255, 255, 230), outline=(255, 105, 180, 255), width=3)
 
-            # 4. Tọa độ 4 ô chứa ảnh webcam (đẩy xuống 190 pixel để tạo khoảng đệm đẹp mắt)
+            # 4. Tọa độ 4 ô chứa ảnh webcam (đẩy xuống 200 pixel để có khoảng đệm đẹp mắt)
             box_coords = [
-                (100, 190, 470, 680),   # Ô 1: Trên - Trái
-                (530, 190, 900, 680),   # Ô 2: Trên - Phải
+                (100, 200, 470, 680),   # Ô 1: Trên - Trái
+                (530, 200, 900, 680),   # Ô 2: Trên - Phải
                 (100, 710, 470, 1240),  # Ô 3: Dưới - Trái
                 (530, 710, 900, 1240)   # Ô 4: Dưới - Phải
             ]
@@ -164,7 +162,7 @@ if all(captured_list):
                 octo_img = octo_img.resize((octo_w, octo_h), Image.Resampling.LANCZOS)
                 
                 octo_x = (bg_width - octo_w) // 2
-                octo_y = (190 + 680 + 710 - octo_h) // 2
+                octo_y = (200 + 680 + 710 - octo_h) // 2
                 base_image.paste(octo_img, (octo_x, octo_y), octo_img)
 
             # 7. Xóa nền và chèn Sticker 1 (Góc trên trái)
@@ -175,7 +173,7 @@ if all(captured_list):
                 stk1_w = 170
                 stk1_h = int(stk1_w * stk1.height // stk1.width)
                 stk1 = stk1.resize((stk1_w, stk1_h), Image.Resampling.LANCZOS)
-                base_image.paste(stk1, (55, 90), stk1)
+                base_image.paste(stk1, (55, 95), stk1)
 
             # 8. Xóa nền và chèn Sticker 2 (Góc dưới phải)
             sticker2_path = os.path.join(current_dir, "sticker2.png")
