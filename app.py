@@ -3,7 +3,7 @@ import io
 import math
 import random
 import streamlit as st
-from PIL import Image, ImageOps, ImageDraw, ImageFilter
+from PIL import Image, ImageOps, ImageDraw, ImageFont, ImageFilter
 
 st.set_page_config(
     page_title="Khanh Hoa Photobooth Pink White", 
@@ -78,7 +78,7 @@ if all(captured_list):
                 img_cam_clean = remove_white_background(img_cam, threshold=240)
                 webcam_images.append(img_cam_clean)
 
-            # 1. Tạo khung nền Gradient Hồng - Trắng ngọt ngào (Hồng pastel sang trọng)
+            # 1. Tạo khung nền Gradient Hồng - Trắng ngọt ngào
             bg_width, bg_height = 1000, 1300
             base_image = Image.new("RGBA", (bg_width, bg_height))
             draw = ImageDraw.Draw(base_image)
@@ -89,7 +89,7 @@ if all(captured_list):
                 b = int(203 + (y / bg_height) * 30)
                 draw.line([(0, y), (bg_width, y)], fill=(r, g, b, 255))
 
-            # 2. Thêm sticker trái tim trắng/hồng và ngôi sao lấp lánh khắp nền
+            # 2. Thêm sticker trái tim và ngôi sao lấp lánh khắp nền
             random.seed(101)
             for _ in range(22):
                 rx = random.randint(30, bg_width - 30)
@@ -100,7 +100,7 @@ if all(captured_list):
             for sp in star_positions:
                 draw_star(draw, sp, size=14, fill_color=(255, 255, 255, 240))
 
-            # 3. Tạo hiệu ứng phát sáng Neon tone Trắng - Hồng cho khung viền
+            # 3. Tạo hiệu ứng phát sáng Neon cho khung viền
             neon_layer = Image.new("RGBA", (bg_width, bg_height), (0, 0, 0, 0))
             neon_draw = ImageDraw.Draw(neon_layer)
             neon_draw.rectangle([(25, 25), (bg_width - 25, bg_height - 25)], outline=(255, 255, 255, 180), width=14)
@@ -112,17 +112,28 @@ if all(captured_list):
             draw.rectangle([(30, 30), (bg_width - 30, bg_height - 30)], outline=(255, 255, 255, 255), width=8)
             draw.rectangle([(42, 42), (bg_width - 42, bg_height - 42)], outline=(255, 105, 180, 255), width=4)
 
-            # Banner tiêu đề ở trên chứa chữ "HAPPY BIRTHDAY KHÁNH HOÀ"
-            draw.rectangle([(100, 45), (900, 115)], fill=(255, 255, 255, 230), outline=(255, 105, 180, 255), width=4)
+            # Banner tiêu đề ở trên chứa chữ "CHUC MUNG SINH NHAT KHANH HOA"
+            banner_box = (100, 45, 900, 115)
+            draw.rectangle([banner_box[0], banner_box[1], banner_box[2], banner_box[3]], fill=(255, 255, 255, 240), outline=(255, 105, 180, 255), width=4)
             
+            # Căn chỉnh chữ cân đối chính giữa banner
+            text = "CHUC MUNG SINH NHAT KHANH HOA"
             try:
-                from PIL import ImageFont
-                font = ImageFont.load_default()
-                draw.text((215, 62), "HAPPY BIRTHDAY KHÁNH HOÀ", fill=(255, 20, 147, 255))
+                # Tải font chữ hệ thống hoặc mặc định, tăng kích thước để chữ đầy đặn
+                font = ImageFont.truetype("DejaVuSans-Bold.ttf", 26)
             except:
-                pass
+                font = ImageFont.load_default()
 
-            # Banner dưới
+            # Tính toán kích thước chữ để căn giữa tuyệt đối theo chiều ngang và dọc
+            bbox = draw.textbbox((0, 0), text, font=font)
+            text_w = bbox[2] - bbox[0]
+            text_h = bbox[3] - bbox[1]
+            text_x = banner_box[0] + ((banner_box[2] - banner_box[0]) - text_w) // 2
+            text_y = banner_box[1] + ((banner_box[3] - banner_box[1]) - text_h) // 2 - 2
+
+            draw.text((text_x, text_y), text, fill=(255, 20, 147, 255), font=font)
+
+            # Banner dưới trang trí
             draw.rectangle([(250, 1180), (750, 1230)], fill=(255, 255, 255, 230), outline=(255, 105, 180, 255), width=3)
 
             # 4. Tọa độ 4 ô chứa ảnh webcam
@@ -179,8 +190,8 @@ if all(captured_list):
                 stk2 = stk2.resize((stk2_w, stk2_h), Image.Resampling.LANCZOS)
                 base_image.paste(stk2, (bg_width - stk2_w - 55, bg_height - stk2_h - 65), stk2)
 
-            st.success("🌟 Tạo siêu phẩm Photobooth Hồng - Trắng thành công!")
-            st.image(base_image, caption="Thành phẩm Photobooth Tone Hồng Trắng", use_container_width=True)
+            st.success("🌟 Tạo siêu phẩm Photobooth thành công!")
+            st.image(base_image, caption="Thành phẩm Photobooth Chúc Mừng Sinh Nhật Khánh Hoà", use_container_width=True)
             
             buf = io.BytesIO()
             base_image.convert("RGB").save(buf, format="PNG")
@@ -189,7 +200,7 @@ if all(captured_list):
             st.download_button(
                 label="📥 Tải ảnh Photobooth về máy",
                 data=byte_im,
-                file_name="khanhhoa_pink_white_photobooth.png",
+                file_name="khanhhoa_birthday_photobooth.png",
                 mime="image/png",
                 type="primary"
             )
