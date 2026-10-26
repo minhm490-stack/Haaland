@@ -112,12 +112,11 @@ if all(captured_list):
             draw.rectangle([(30, 30), (bg_width - 30, bg_height - 30)], outline=(255, 255, 255, 255), width=8)
             draw.rectangle([(42, 42), (bg_width - 42, bg_height - 42)], outline=(255, 105, 180, 255), width=4)
 
-            # Banner tiêu đề ở trên to bản
-            banner_box = (50, 30, 950, 140)
+            # Banner tiêu đề ở trên được mở rộng chiều cao để chứa 2 dòng chữ cực to
+            banner_box = (50, 25, 950, 155)
             draw.rectangle([banner_box[0], banner_box[1], banner_box[2], banner_box[3]], fill=(255, 255, 255, 255), outline=(255, 105, 180, 255), width=6)
             
-            # Sử dụng chiến lược tải font TrueType lớn (kích thước 48 cực to rõ)
-            text = "CHUC MUNG SINH NHAT KHANH HOA"
+            # Tải font lớn (kích thước 50 siêu to)
             font = None
             font_paths = [
                 "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
@@ -127,7 +126,7 @@ if all(captured_list):
             ]
             for fp in font_paths:
                 try:
-                    font = ImageFont.truetype(fp, 46)
+                    font = ImageFont.truetype(fp, 50)
                     break
                 except:
                     continue
@@ -135,24 +134,36 @@ if all(captured_list):
             if font is None:
                 font = ImageFont.load_default()
 
-            # Căn giữa tuyệt đối chữ trong banner
-            bbox = draw.textbbox((0, 0), text, font=font)
-            text_w = bbox[2] - bbox[0]
-            text_h = bbox[3] - bbox[1]
-            text_x = banner_box[0] + ((banner_box[2] - banner_box[0]) - text_w) // 2
-            text_y = banner_box[1] + ((banner_box[3] - banner_box[1]) - text_h) // 2
+            # Chia thành 2 dòng để chữ cực kỳ lớn và rõ ràng
+            line1 = "CHUC MUNG SINH NHAT"
+            line2 = "KHANH HOA"
 
-            # Đổ bóng chữ nhẹ tạo chiều sâu nổi bật
-            draw.text((text_x + 2, text_y + 2), text, fill=(200, 200, 200, 255), font=font)
-            draw.text((text_x, text_y), text, fill=(255, 20, 147, 255), font=font)
+            # Căn giữa dòng 1
+            bbox1 = draw.textbbox((0, 0), line1, font=font)
+            w1 = bbox1[2] - bbox1[0]
+            x1 = banner_box[0] + ((banner_box[2] - banner_box[0]) - w1) // 2
+            y1 = banner_box[1] + 15
+
+            # Căn giữa dòng 2
+            bbox2 = draw.textbbox((0, 0), line2, font=font)
+            w2 = bbox2[2] - bbox2[0]
+            x2 = banner_box[0] + ((banner_box[2] - banner_box[0]) - w2) // 2
+            y2 = y1 + 52
+
+            # Đổ bóng và vẽ chữ màu hồng đậm
+            draw.text((x1 + 2, y1 + 2), line1, fill=(200, 200, 200, 255), font=font)
+            draw.text((x1, y1), line1, fill=(255, 20, 147, 255), font=font)
+
+            draw.text((x2 + 2, y2 + 2), line2, fill=(200, 200, 200, 255), font=font)
+            draw.text((x2, y2), line2, fill=(255, 20, 147, 255), font=font)
 
             # Banner dưới trang trí
             draw.rectangle([(250, 1180), (750, 1230)], fill=(255, 255, 255, 230), outline=(255, 105, 180, 255), width=3)
 
             # 4. Tọa độ 4 ô chứa ảnh webcam
             box_coords = [
-                (100, 150, 470, 680),   # Ô 1: Trên - Trái
-                (530, 150, 900, 680),   # Ô 2: Trên - Phải
+                (100, 165, 470, 680),   # Ô 1: Trên - Trái
+                (530, 165, 900, 680),   # Ô 2: Trên - Phải
                 (100, 710, 470, 1240),  # Ô 3: Dưới - Trái
                 (530, 710, 900, 1240)   # Ô 4: Dưới - Phải
             ]
@@ -180,7 +191,7 @@ if all(captured_list):
                 octo_img = octo_img.resize((octo_w, octo_h), Image.Resampling.LANCZOS)
                 
                 octo_x = (bg_width - octo_w) // 2
-                octo_y = (150 + 680 + 710 - octo_h) // 2
+                octo_y = (165 + 680 + 710 - octo_h) // 2
                 base_image.paste(octo_img, (octo_x, octo_y), octo_img)
 
             # 7. Xóa nền và chèn Sticker 1 (Góc trên trái)
@@ -191,7 +202,7 @@ if all(captured_list):
                 stk1_w = 170
                 stk1_h = int(stk1_w * stk1.height // stk1.width)
                 stk1 = stk1.resize((stk1_w, stk1_h), Image.Resampling.LANCZOS)
-                base_image.paste(stk1, (55, 65), stk1)
+                base_image.paste(stk1, (55, 75), stk1)
 
             # 8. Xóa nền và chèn Sticker 2 (Góc dưới phải)
             sticker2_path = os.path.join(current_dir, "sticker2.png")
