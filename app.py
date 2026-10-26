@@ -27,12 +27,11 @@ with col2:
 captured_list = [cam1, cam2, cam3, cam4]
 
 def remove_white_background(img, threshold=230):
-    """Hàm tự động biến nền trắng hoặc xám nhạt thành trong suốt (xóa phong nền)"""
+    """Hàm tự động biến nền trắng hoặc xám nhạt thành trong suốt (xóa phông nền)"""
     img = img.convert("RGBA")
     datas = img.getdata()
     newData = []
     for item in datas:
-        # Nếu điểm ảnh có màu sáng (gần trắng), chuyển nó thành trong suốt hoàn toàn
         if item[0] > threshold and item[1] > threshold and item[2] > threshold:
             newData.append((255, 255, 255, 0))
         else:
@@ -54,28 +53,28 @@ if all(captured_list):
             webcam_images = []
             for f in captured_list:
                 f.seek(0)
-                # Đọc ảnh webcam và tự động xóa phông nền trắng/sáng xung quanh người
                 img_cam = Image.open(f).convert("RGBA")
                 img_cam_clean = remove_white_background(img_cam, threshold=240)
                 webcam_images.append(img_cam_clean)
 
-            # 1. Tạo hiệu ứng nền Gradient Xanh dương - Hồng neon cực kỳ xịn xò
+            # 1. Tạo hiệu ứng nền Gradient Xanh dương - Hồng neon
             bg_width, bg_height = 1000, 1300
             base_image = Image.new("RGBA", (bg_width, bg_height))
             draw = ImageDraw.Draw(base_image)
             
             for y in range(bg_height):
-                # Chuyển sắc mượt mà từ Xanh đậm ở trên sang Hồng tím ở dưới
                 r = int(30 + (y / bg_height) * 190)
                 g = int(144 - (y / bg_height) * 80)
                 b = int(255 - (y / bg_height) * 50)
                 draw.line([(0, y), (bg_width, y)], fill=(r, g, b, 255))
 
-            # Vẽ viền phong cách neon nghệ thuật
+            # Vẽ viền neon nghệ thuật
             draw.rectangle([(30, 30), (bg_width - 30, bg_height - 30)], outline=(255, 255, 255, 255), width=10)
             draw.rectangle([(45, 45), (bg_width - 45, bg_height - 45)], outline=(255, 105, 180, 255), width=4)
 
             # 2. Tọa độ 4 ô chứa ảnh
             box_coords = [
-                (100, 150, 470, 680),   # Ô 1: Trên - Trái
-                (530, 150, 900
+                (100, 150, 470, 680),
+                (530, 150, 900, 680),
+                (100, 710, 470, 1240),
+                (530, 710,
