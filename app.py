@@ -1,7 +1,6 @@
-import os
 import io
 import streamlit as st
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageDraw
 
 st.set_page_config(
     page_title="Khanh Hoa Photobooth", 
@@ -9,8 +8,8 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("Khanh Hoa Photobooth - Haaland & MCK")
-st.write("Hay dung webcam chụp lần lượt 4 bức ảnh để ghép vào khung!")
+st.title("Khanh Hoa Photobooth - Tự Tạo Khung")
+st.write("Hãy dùng webcam chụp lần lượt 4 bức ảnh để tự động ghép vào khung!")
 
 col1, col2 = st.columns(2)
 
@@ -27,51 +26,60 @@ with col2:
 captured_list = [cam1, cam2, cam3, cam4]
 
 if all(captured_list):
-    if st.button("Ghep Anh Vao Khung Ngay", type="primary"):
+    if st.button("Tu Tao Khung Va Ghep Anh", type="primary"):
         try:
             webcam_images = []
             for f in captured_list:
                 f.seek(0)
                 webcam_images.append(Image.open(f).convert("RGBA"))
 
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            template_path = os.path.join(current_dir, "khung.png")
+            # 1. Tự tạo khung nền (background) màu cam chủ đạo kích thước 1000x1300 pixel
+            bg_width, bg_height = 1000, 1300
+            base_image = Image.new("RGBA", (bg_width, bg_height), (235, 110, 30, 255))
+            draw = ImageDraw.Draw(base_image)
+
+            # Vẽ các đường viền trang trí khung phong cách graffiti/comic
+            draw.rectangle([(30, 30), (bg_width - 30, bg_height - 30)], outline=(255, 220, 100, 255), width=8)
+            draw.rectangle([(50, 50), (bg_width - 50, bg_height - 50)], outline=(255, 255, 255, 255), width=4)
+
+            # 2. Tọa độ 4 ô chứa ảnh trên nền canvas mới
+            box_coords = [
+                (100, 150, 470, 680),   # Ô 1: Trên - Trái
+                (530, 150, 900, 680),   # Ô 2: Trên - Phải
+                (100, 710, 470, 1240),  # Ô 3: Dưới - Trái
+                (530, 710, 900, 1240)   # Ô 4: Dưới - Phải
+            ]
+
+            # 3. Fit và dán từng ảnh webcam vào 4 ô kèm vẽ viền trắng nổi bật cho từng ô ảnh
+            for i, img in enumerate(webcam_images):
+                box = box_coords[i]
+                bw = box[2] - box[0]
+                bh = box[3] - box[1]
+
+                # Cắt và tinh chỉnh ảnh vừa khít ô
+                img_fitted = ImageOps.fit(img, (bw - 20, bh - 20), method=Image.Resampling.LANCZOS)
+                
+                # Vẽ khung nền trắng cho mỗi ô ảnh
+                draw.rectangle([box[0], box[1], box[2], box[3]], fill=(255, 255, 255, 255), outline=(0, 0, 0, 255), width=5)
+                
+                # Dán ảnh lên nền
+                base_image.paste(img_fitted, (box[0] + 10, box[1] + 10))
+
+            st.success("Tự tạo khung và ghép ảnh thành công!")
+            st.image(base_image, caption="Photobooth của bạn", use_container_width=True)
             
-            if not os.path.exists(template_path):
-                st.error("Khong tim thay file khung.png tren GitHub!")
-            else:
-                base_image = Image.open(template_path).convert("RGBA")
-                
-                # Tọa độ mới đã được mở rộng và căn chỉnh chuẩn xác cho 4 ô trống lớn
-                box_coords = [
-                    (226, 271, 484, 514),  # Ô 1: Trên - Trái
-                    (516, 271, 774, 514),  # Ô 2: Trên - Phải
-                    (226, 532, 484, 775),  # Ô 3: Dưới - Trái
-                    (516, 532, 774, 775)   # Ô 4: Dưới - Phải
-                ]
+            # Nút tải ảnh kết quả về máy
+            buf = io.BytesIO()
+            base_image.convert("RGB").save(buf, format="PNG")
+            byte_im = buf.getvalue()
 
-                for i, img in enumerate(webcam_images):
-                    box = box_coords[i]
-                    bw = box[2] - box[0]
-                    bh = box[3] - box[1]
-
-                    img_fitted = ImageOps.fit(img, (bw, bh), method=Image.Resampling.LANCZOS)
-                    base_image.paste(img_fitted, (box[0], box[1]))
-
-                st.success("Ghep anh thanh cong!")
-                st.image(base_image, caption="Photobooth của bạn", use_container_width=True)
-                
-                buf = io.BytesIO()
-                base_image.convert("RGB").save(buf, format="PNG")
-                byte_im = buf.getvalue()
-
-                st.download_button(
-                    label="Tai anh ve may",
-                    data=byte_im,
-                    file_name="photobooth.png",
-                    mime="image/png",
-                    type="primary"
-                )
+            st.download_button(
+                label="Tai anh ve may",
+                data=byte_im,
+                file_name="khanhhoa_autofit_photobooth.png",
+                mime="image/png",
+                type="primary"
+            )
 
         except Exception as e:
             st.error(f"Loi: {e}")
