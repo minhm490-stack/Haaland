@@ -112,16 +112,22 @@ if all(captured_list):
             draw.rectangle([(30, 30), (bg_width - 30, bg_height - 30)], outline=(255, 255, 255, 255), width=8)
             draw.rectangle([(42, 42), (bg_width - 42, bg_height - 42)], outline=(255, 105, 180, 255), width=4)
 
-            # Banner tiêu đề ở trên được mở rộng to ra để chứa chữ lớn
-            banner_box = (50, 35, 950, 140)
-            draw.rectangle([banner_box[0], banner_box[1], banner_box[2], banner_box[3]], fill=(255, 255, 255, 245), outline=(255, 105, 180, 255), width=5)
+            # Banner tiêu đề ở trên to bản
+            banner_box = (50, 30, 950, 140)
+            draw.rectangle([banner_box[0], banner_box[1], banner_box[2], banner_box[3]], fill=(255, 255, 255, 255), outline=(255, 105, 180, 255), width=6)
             
-            # Đảm bảo chữ siêu to, sử dụng font lớn kích thước 50
+            # Sử dụng chiến lược tải font TrueType lớn (kích thước 48 cực to rõ)
             text = "CHUC MUNG SINH NHAT KHANH HOA"
             font = None
-            for font_path in ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", "arial.ttf", "DejaVuSans-Bold.ttf"]:
+            font_paths = [
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+                "arialbd.ttf",
+                "DejaVuSans-Bold.ttf"
+            ]
+            for fp in font_paths:
                 try:
-                    font = ImageFont.truetype(font_path, 42)
+                    font = ImageFont.truetype(fp, 46)
                     break
                 except:
                     continue
@@ -136,6 +142,8 @@ if all(captured_list):
             text_x = banner_box[0] + ((banner_box[2] - banner_box[0]) - text_w) // 2
             text_y = banner_box[1] + ((banner_box[3] - banner_box[1]) - text_h) // 2
 
+            # Đổ bóng chữ nhẹ tạo chiều sâu nổi bật
+            draw.text((text_x + 2, text_y + 2), text, fill=(200, 200, 200, 255), font=font)
             draw.text((text_x, text_y), text, fill=(255, 20, 147, 255), font=font)
 
             # Banner dưới trang trí
