@@ -1,5 +1,2 @@
-flask
-psutil
-pywin32
 streamlit
 pillow
