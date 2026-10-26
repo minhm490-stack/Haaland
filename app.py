@@ -114,25 +114,23 @@ if all(captured_list):
 
             current_dir = os.path.dirname(os.path.abspath(__file__))
 
-            # --- CHÈN BANNER ẢNH CHỮ VÀO GIỮA KHUNG PHÍA TRÊN ---
+            # --- CHÈN BANNER ẢNH CHỮ VÀO GIỮA KHUNG PHÍA TRÊN (ĐÃ CHỈNH KÍCH THƯỚC VỪA KHÍT) ---
             banner_path = os.path.join(current_dir, "banner.png")
             if os.path.exists(banner_path):
                 banner_img = Image.open(banner_path).convert("RGBA")
-                # Điều chỉnh chiều rộng banner vừa khít với khung (ví dụ rộng 880 pixel)
-                banner_w = 880
+                # Thu nhỏ chiều rộng banner xuống 800 pixel để không bị khuất viền
+                banner_w = 800
                 banner_h = int(banner_w * banner_img.height // banner_img.width)
                 banner_img = banner_img.resize((banner_w, banner_h), Image.Resampling.LANCZOS)
                 
-                # Căn giữa tuyệt đối theo chiều ngang, đặt ở vị trí phía trên
+                # Căn giữa tuyệt đối theo chiều ngang
                 banner_x = (bg_width - banner_w) // 2
-                banner_y = 50
+                banner_y = 48  # Đặt vị trí cân đối phía trên
                 
-                # Dán banner lên nền
                 base_image.paste(banner_img, (banner_x, banner_y), banner_img)
             else:
-                # Fallback nếu chưa tải ảnh banner lên
                 draw.rectangle([(60, 40, 940, 150)], fill=(255, 255, 255, 250), outline=(255, 105, 180, 255), width=5)
-            # ----------------------------------------------------
+            # ---------------------------------------------------------------------------------
 
             # Banner dưới trang trí
             draw.rectangle([(250, 1180), (750, 1230)], fill=(255, 255, 255, 230), outline=(255, 105, 180, 255), width=3)
@@ -206,4 +204,3 @@ if all(captured_list):
 
         except Exception as e:
             st.error(f"Đã xảy ra lỗi: {e}")
-            
