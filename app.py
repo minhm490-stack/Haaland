@@ -3,7 +3,7 @@ import io
 import math
 import random
 import streamlit as st
-from PIL import Image, ImageOps, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageOps, ImageDraw, ImageFilter
 
 st.set_page_config(
     page_title="Khanh Hoa Photobooth Pink White", 
@@ -112,49 +112,27 @@ if all(captured_list):
             draw.rectangle([(30, 30), (bg_width - 30, bg_height - 30)], outline=(255, 255, 255, 255), width=8)
             draw.rectangle([(42, 42), (bg_width - 42, bg_height - 42)], outline=(255, 105, 180, 255), width=4)
 
-            # --- THIẾT KẾ BANNER CHỮ CỰC TO & SẮC NÉT (DÙNG KỸ THUẬT VẼ ĐỒ HỌA RIÊNG) ---
-            banner_box = (50, 30, 950, 155)
-            draw.rectangle([banner_box[0], banner_box[1], banner_box[2], banner_box[3]], fill=(255, 255, 255, 255), outline=(255, 105, 180, 255), width=6)
-            
-            # Thử load font hệ thống với kích thước siêu lớn (cỡ 52)
-            font = None
-            font_paths = [
-                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-                "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
-                "arialbd.ttf",
-                "DejaVuSans-Bold.ttf"
-            ]
-            for fp in font_paths:
-                try:
-                    font = ImageFont.truetype(fp, 52)
-                    break
-                except:
-                    continue
-            
-            if font is None:
-                font = ImageFont.load_default()
+            current_dir = os.path.dirname(os.path.abspath(__file__))
 
-            line1 = "HAPPY BIRTHDAY"
-            line2 = "KHANH HOA"
-
-            # Tính toán tọa độ để căn giữa hoàn hảo từng dòng chữ to
-            bbox1 = draw.textbbox((0, 0), line1, font=font)
-            w1 = bbox1[2] - bbox1[0]
-            x1 = banner_box[0] + ((banner_box[2] - banner_box[0]) - w1) // 2
-            y1 = banner_box[1] + 12
-
-            bbox2 = draw.textbbox((0, 0), line2, font=font)
-            w2 = bbox2[2] - bbox2[0]
-            x2 = banner_box[0] + ((banner_box[2] - banner_box[0]) - w2) // 2
-            y2 = y1 + 54
-
-            # Vẽ đổ bóng sắc nét và chữ hồng đậm rực rỡ nổi bật
-            draw.text((x1 + 3, y1 + 3), line1, fill=(210, 210, 210, 255), font=font)
-            draw.text((x1, y1), line1, fill=(255, 20, 147, 255), font=font)
-
-            draw.text((x2 + 3, y2 + 3), line2, fill=(210, 210, 210, 255), font=font)
-            draw.text((x2, y2), line2, fill=(255, 20, 147, 255), font=font)
-            # ------------------------------------------------------------------
+            # --- CHÈN BANNER ẢNH CHỮ VÀO GIỮA KHUNG PHÍA TRÊN ---
+            banner_path = os.path.join(current_dir, "banner.png")
+            if os.path.exists(banner_path):
+                banner_img = Image.open(banner_path).convert("RGBA")
+                # Điều chỉnh chiều rộng banner vừa khít với khung (ví dụ rộng 880 pixel)
+                banner_w = 880
+                banner_h = int(banner_w * banner_img.height // banner_img.width)
+                banner_img = banner_img.resize((banner_w, banner_h), Image.Resampling.LANCZOS)
+                
+                # Căn giữa tuyệt đối theo chiều ngang, đặt ở vị trí phía trên
+                banner_x = (bg_width - banner_w) // 2
+                banner_y = 50
+                
+                # Dán banner lên nền
+                base_image.paste(banner_img, (banner_x, banner_y), banner_img)
+            else:
+                # Fallback nếu chưa tải ảnh banner lên
+                draw.rectangle([(60, 40, 940, 150)], fill=(255, 255, 255, 250), outline=(255, 105, 180, 255), width=5)
+            # ----------------------------------------------------
 
             # Banner dưới trang trí
             draw.rectangle([(250, 1180), (750, 1230)], fill=(255, 255, 255, 230), outline=(255, 105, 180, 255), width=3)
@@ -177,8 +155,6 @@ if all(captured_list):
                 
                 draw.rectangle([box[0], box[1], box[2], box[3]], fill=(255, 240, 245, 220), outline=(255, 105, 180, 255), width=6)
                 base_image.paste(img_fitted, (box[0] + 12, box[1] + 12), img_fitted)
-
-            current_dir = os.path.dirname(os.path.abspath(__file__))
 
             # 6. Xóa nền và chèn Bạch Tuộc vào giữa
             octopus_path = os.path.join(current_dir, "bach_tuoc.png")
@@ -230,3 +206,4 @@ if all(captured_list):
 
         except Exception as e:
             st.error(f"Đã xảy ra lỗi: {e}")
+            
