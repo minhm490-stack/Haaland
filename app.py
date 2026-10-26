@@ -98,3 +98,135 @@ if all(captured_list):
 
             star_positions = [(70, 70), (930, 70), (70, 1230), (930, 1230), (500, 45), (500, 1255), (200, 45), (800, 45)]
             for sp in star_positions:
+                draw_star(draw, sp, size=14, fill_color=(255, 255, 255, 240))
+
+            # 3. Tạo hiệu ứng phát sáng Neon cho khung viền
+            neon_layer = Image.new("RGBA", (bg_width, bg_height), (0, 0, 0, 0))
+            neon_draw = ImageDraw.Draw(neon_layer)
+            neon_draw.rectangle([(25, 25), (bg_width - 25, bg_height - 25)], outline=(255, 255, 255, 180), width=14)
+            neon_layer = neon_layer.filter(ImageFilter.GaussianBlur(10))
+            base_image = Image.alpha_composite(base_image, neon_layer)
+            draw = ImageDraw.Draw(base_image)
+
+            # Viền khung kép sắc nét
+            draw.rectangle([(30, 30), (bg_width - 30, bg_height - 30)], outline=(255, 255, 255, 255), width=8)
+            draw.rectangle([(42, 42), (bg_width - 42, bg_height - 42)], outline=(255, 105, 180, 255), width=4)
+
+            # --- THIẾT KẾ BANNER CHỮ CỰC TO & SẮC NÉT (DÙNG KỸ THUẬT VẼ ĐỒ HỌA RIÊNG) ---
+            banner_box = (50, 30, 950, 155)
+            draw.rectangle([banner_box[0], banner_box[1], banner_box[2], banner_box[3]], fill=(255, 255, 255, 255), outline=(255, 105, 180, 255), width=6)
+            
+            # Thử load font hệ thống với kích thước siêu lớn (cỡ 52)
+            font = None
+            font_paths = [
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+                "arialbd.ttf",
+                "DejaVuSans-Bold.ttf"
+            ]
+            for fp in font_paths:
+                try:
+                    font = ImageFont.truetype(fp, 52)
+                    break
+                except:
+                    continue
+            
+            if font is None:
+                font = ImageFont.load_default()
+
+            line1 = "HAPPY BIRTHDAY"
+            line2 = "KHANH HOA"
+
+            # Tính toán tọa độ để căn giữa hoàn hảo từng dòng chữ to
+            bbox1 = draw.textbbox((0, 0), line1, font=font)
+            w1 = bbox1[2] - bbox1[0]
+            x1 = banner_box[0] + ((banner_box[2] - banner_box[0]) - w1) // 2
+            y1 = banner_box[1] + 12
+
+            bbox2 = draw.textbbox((0, 0), line2, font=font)
+            w2 = bbox2[2] - bbox2[0]
+            x2 = banner_box[0] + ((banner_box[2] - banner_box[0]) - w2) // 2
+            y2 = y1 + 54
+
+            # Vẽ đổ bóng sắc nét và chữ hồng đậm rực rỡ nổi bật
+            draw.text((x1 + 3, y1 + 3), line1, fill=(210, 210, 210, 255), font=font)
+            draw.text((x1, y1), line1, fill=(255, 20, 147, 255), font=font)
+
+            draw.text((x2 + 3, y2 + 3), line2, fill=(210, 210, 210, 255), font=font)
+            draw.text((x2, y2), line2, fill=(255, 20, 147, 255), font=font)
+            # ------------------------------------------------------------------
+
+            # Banner dưới trang trí
+            draw.rectangle([(250, 1180), (750, 1230)], fill=(255, 255, 255, 230), outline=(255, 105, 180, 255), width=3)
+
+            # 4. Tọa độ 4 ô chứa ảnh webcam
+            box_coords = [
+                (100, 175, 470, 680),   # Ô 1: Trên - Trái
+                (530, 175, 900, 680),   # Ô 2: Trên - Phải
+                (100, 710, 470, 1240),  # Ô 3: Dưới - Trái
+                (530, 710, 900, 1240)   # Ô 4: Dưới - Phải
+            ]
+
+            # 5. Fit ảnh webcam vào 4 ô với khung viền trắng hồng
+            for i, img in enumerate(webcam_images):
+                box = box_coords[i]
+                bw = box[2] - box[0]
+                bh = box[3] - box[1]
+
+                img_fitted = ImageOps.fit(img, (bw - 24, bh - 24), method=Image.Resampling.LANCZOS)
+                
+                draw.rectangle([box[0], box[1], box[2], box[3]], fill=(255, 240, 245, 220), outline=(255, 105, 180, 255), width=6)
+                base_image.paste(img_fitted, (box[0] + 12, box[1] + 12), img_fitted)
+
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+
+            # 6. Xóa nền và chèn Bạch Tuộc vào giữa
+            octopus_path = os.path.join(current_dir, "bach_tuoc.png")
+            if os.path.exists(octopus_path):
+                octo_img = Image.open(octopus_path).convert("RGBA")
+                octo_img = remove_white_background(octo_img)
+                octo_w = 210
+                octo_h = int(octo_w * octo_img.height // octo_img.width)
+                octo_img = octo_img.resize((octo_w, octo_h), Image.Resampling.LANCZOS)
+                
+                octo_x = (bg_width - octo_w) // 2
+                octo_y = (175 + 680 + 710 - octo_h) // 2
+                base_image.paste(octo_img, (octo_x, octo_y), octo_img)
+
+            # 7. Xóa nền và chèn Sticker 1 (Góc trên trái)
+            sticker1_path = os.path.join(current_dir, "sticker1.png")
+            if os.path.exists(sticker1_path):
+                stk1 = Image.open(sticker1_path).convert("RGBA")
+                stk1 = remove_white_background(stk1)
+                stk1_w = 170
+                stk1_h = int(stk1_w * stk1.height // stk1.width)
+                stk1 = stk1.resize((stk1_w, stk1_h), Image.Resampling.LANCZOS)
+                base_image.paste(stk1, (55, 80), stk1)
+
+            # 8. Xóa nền và chèn Sticker 2 (Góc dưới phải)
+            sticker2_path = os.path.join(current_dir, "sticker2.png")
+            if os.path.exists(sticker2_path):
+                stk2 = Image.open(sticker2_path).convert("RGBA")
+                stk2 = remove_white_background(stk2)
+                stk2_w = 170
+                stk2_h = int(stk2_w * stk2.height // stk2.width)
+                stk2 = stk2.resize((stk2_w, stk2_h), Image.Resampling.LANCZOS)
+                base_image.paste(stk2, (bg_width - stk2_w - 55, bg_height - stk2_h - 65), stk2)
+
+            st.success("🌟 Tạo siêu phẩm Photobooth thành công!")
+            st.image(base_image, caption="Thành phẩm Photobooth Happy Birthday Khánh Hoà", use_container_width=True)
+            
+            buf = io.BytesIO()
+            base_image.convert("RGB").save(buf, format="PNG")
+            byte_im = buf.getvalue()
+
+            st.download_button(
+                label="📥 Tải ảnh Photobooth về máy",
+                data=byte_im,
+                file_name="khanhhoa_birthday_photobooth.png",
+                mime="image/png",
+                type="primary"
+            )
+
+        except Exception as e:
+            st.error(f"Đã xảy ra lỗi: {e}")
