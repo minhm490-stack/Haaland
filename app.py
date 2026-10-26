@@ -44,7 +44,7 @@ if all(captured_list):
             else:
                 base_image = Image.open(template_path).convert("RGBA")
                 
-                # 3. Tọa độ 4 ô trống
+                # 3. Tọa độ chính xác cho 4 ô trống
                 box_coords = [
                     (312, 238, 497, 525),
                     (312, 574, 497, 860),
@@ -73,10 +73,3 @@ if all(captured_list):
                 st.download_button(
                     label="📥 Tải ảnh Photobooth về máy",
                     data=byte_im,
-                    file_name="khanhhoa_graffiti_photobooth.png",
-                    mime="image/png",
-                    type="primary"
-                )
-
-        except Exception as e:
-            st.error(f"Đã xảy ra lỗi trong quá trình xử lý ảnh: {e}")
