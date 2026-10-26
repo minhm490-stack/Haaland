@@ -112,23 +112,29 @@ if all(captured_list):
             draw.rectangle([(30, 30), (bg_width - 30, bg_height - 30)], outline=(255, 255, 255, 255), width=8)
             draw.rectangle([(42, 42), (bg_width - 42, bg_height - 42)], outline=(255, 105, 180, 255), width=4)
 
-            # Banner tiêu đề ở trên to bản hơn để chứa chữ cỡ lớn
-            banner_box = (60, 40, 940, 130)
-            draw.rectangle([banner_box[0], banner_box[1], banner_box[2], banner_box[3]], fill=(255, 255, 255, 240), outline=(255, 105, 180, 255), width=5)
+            # Banner tiêu đề ở trên được mở rộng to ra để chứa chữ lớn
+            banner_box = (50, 35, 950, 140)
+            draw.rectangle([banner_box[0], banner_box[1], banner_box[2], banner_box[3]], fill=(255, 255, 255, 245), outline=(255, 105, 180, 255), width=5)
             
-            # Căn chỉnh chữ to rõ và căn giữa tuyệt đối
+            # Đảm bảo chữ siêu to, sử dụng font lớn kích thước 50
             text = "CHUC MUNG SINH NHAT KHANH HOA"
-            try:
-                # Tăng kích thước font lên 36 để chữ thật to và nổi bật
-                font = ImageFont.truetype("DejaVuSans-Bold.ttf", 400)
-            except:
+            font = None
+            for font_path in ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", "arial.ttf", "DejaVuSans-Bold.ttf"]:
+                try:
+                    font = ImageFont.truetype(font_path, 42)
+                    break
+                except:
+                    continue
+            
+            if font is None:
                 font = ImageFont.load_default()
 
+            # Căn giữa tuyệt đối chữ trong banner
             bbox = draw.textbbox((0, 0), text, font=font)
             text_w = bbox[2] - bbox[0]
             text_h = bbox[3] - bbox[1]
             text_x = banner_box[0] + ((banner_box[2] - banner_box[0]) - text_w) // 2
-            text_y = banner_box[1] + ((banner_box[3] - banner_box[1]) - text_h) // 2 - 2
+            text_y = banner_box[1] + ((banner_box[3] - banner_box[1]) - text_h) // 2
 
             draw.text((text_x, text_y), text, fill=(255, 20, 147, 255), font=font)
 
@@ -189,7 +195,7 @@ if all(captured_list):
                 stk2 = stk2.resize((stk2_w, stk2_h), Image.Resampling.LANCZOS)
                 base_image.paste(stk2, (bg_width - stk2_w - 55, bg_height - stk2_h - 65), stk2)
 
-            st.success("🌟 Tạo siêu phẩm Photobooth thành công!")
+            st.success("🌟 Tạo siêu phẩm Photobooth chữ cực to thành công!")
             st.image(base_image, caption="Thành phẩm Photobooth Chúc Mừng Sinh Nhật Khánh Hoà", use_container_width=True)
             
             buf = io.BytesIO()
