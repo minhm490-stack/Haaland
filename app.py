@@ -6,13 +6,13 @@ import streamlit as st
 from PIL import Image, ImageOps, ImageDraw, ImageFilter
 
 st.set_page_config(
-    page_title="Khanh Hoa Photobooth Cute", 
-    page_icon="💖", 
+    page_title="Khanh Hoa Photobooth Pink White", 
+    page_icon="🌸", 
     layout="centered"
 )
 
-st.title("💖 Khánh Hoà Photobooth - Siêu Cấp Cute & Sống Động 💖")
-st.write("Chụp 4 ảnh từ webcam để tạo siêu phẩm Photobooth ngập tràn sticker dễ thương!")
+st.title("🌸 Khánh Hoà Photobooth - Tone Hồng Trắng Ngọt Ngào 🌸")
+st.write("Chụp 4 ảnh từ webcam để tạo siêu phẩm Photobooth tone Hồng - Trắng cực xinh!")
 
 col1, col2 = st.columns(2)
 
@@ -69,7 +69,7 @@ if all(captured_list):
             img_preview = Image.open(cam_file)
             st.image(img_preview, caption=f"Ảnh {i+1}", use_container_width=True)
 
-    if st.button("🚀 Tạo Siêu Phẩm Cute Ngay", type="primary"):
+    if st.button("🚀 Tạo Siêu Phẩm Hồng - Trắng Ngay", type="primary"):
         try:
             webcam_images = []
             for f in captured_list:
@@ -78,43 +78,52 @@ if all(captured_list):
                 img_cam_clean = remove_white_background(img_cam, threshold=240)
                 webcam_images.append(img_cam_clean)
 
-            # 1. Tạo khung nền Gradient Xanh - Hồng pastel ngọt ngào
+            # 1. Tạo khung nền Gradient Hồng - Trắng ngọt ngào (Hồng pastel sang trọng)
             bg_width, bg_height = 1000, 1300
             base_image = Image.new("RGBA", (bg_width, bg_height))
             draw = ImageDraw.Draw(base_image)
             
             for y in range(bg_height):
-                r = int(50 + (y / bg_height) * 180)
-                g = int(140 - (y / bg_height) * 40)
-                b = int(250 - (y / bg_height) * 20)
+                r = int(255 - (y / bg_height) * 30)
+                g = int(192 + (y / bg_height) * 30)
+                b = int(203 + (y / bg_height) * 30)
                 draw.line([(0, y), (bg_width, y)], fill=(r, g, b, 255))
 
-            # 2. Thêm vô số sticker trái tim và ngôi sao cute ngẫu nhiên khắp nền
-            random.seed(100)
-            for _ in range(20):
+            # 2. Thêm sticker trái tim trắng/hồng và ngôi sao lấp lánh khắp nền
+            random.seed(101)
+            for _ in range(22):
                 rx = random.randint(30, bg_width - 30)
                 ry = random.randint(30, bg_height - 30)
-                draw_heart(draw, (rx, ry), size=random.randint(10, 20), fill_color=(255, 182, 193, 220))
+                draw_heart(draw, (rx, ry), size=random.randint(10, 18), fill_color=(255, 255, 255, 200))
 
             star_positions = [(70, 70), (930, 70), (70, 1230), (930, 1230), (500, 45), (500, 1255), (200, 45), (800, 45)]
             for sp in star_positions:
-                draw_star(draw, sp, size=14, fill_color=(255, 255, 102, 240))
+                draw_star(draw, sp, size=14, fill_color=(255, 255, 255, 240))
 
-            # 3. Tạo hiệu ứng phát sáng Neon ngọt ngào cho khung viền
+            # 3. Tạo hiệu ứng phát sáng Neon tone Trắng - Hồng cho khung viền
             neon_layer = Image.new("RGBA", (bg_width, bg_height), (0, 0, 0, 0))
             neon_draw = ImageDraw.Draw(neon_layer)
-            neon_draw.rectangle([(25, 25), (bg_width - 25, bg_height - 25)], outline=(255, 105, 180, 180), width=14)
+            neon_draw.rectangle([(25, 25), (bg_width - 25, bg_height - 25)], outline=(255, 255, 255, 180), width=14)
             neon_layer = neon_layer.filter(ImageFilter.GaussianBlur(10))
             base_image = Image.alpha_composite(base_image, neon_layer)
             draw = ImageDraw.Draw(base_image)
 
             # Viền khung kép sắc nét
             draw.rectangle([(30, 30), (bg_width - 30, bg_height - 30)], outline=(255, 255, 255, 255), width=8)
-            draw.rectangle([(42, 42), (bg_width - 42, bg_height - 42)], outline=(255, 182, 193, 255), width=4)
+            draw.rectangle([(42, 42), (bg_width - 42, bg_height - 42)], outline=(255, 105, 180, 255), width=4)
 
-            # Banner tiêu đề cute ở trên và dưới
-            draw.rectangle([(150, 45), (850, 110)], fill=(30, 30, 60, 220), outline=(255, 105, 180, 255), width=3)
-            draw.rectangle([(250, 1180), (750, 1230)], fill=(30, 30, 60, 220), outline=(255, 255, 102, 255), width=3)
+            # Banner tiêu đề ở trên chứa chữ "HAPPY BIRTHDAY KHÁNH HOÀ"
+            draw.rectangle([(100, 45), (900, 115)], fill=(255, 255, 255, 230), outline=(255, 105, 180, 255), width=4)
+            
+            try:
+                from PIL import ImageFont
+                font = ImageFont.load_default()
+                draw.text((215, 62), "HAPPY BIRTHDAY KHÁNH HOÀ", fill=(255, 20, 147, 255))
+            except:
+                pass
+
+            # Banner dưới
+            draw.rectangle([(250, 1180), (750, 1230)], fill=(255, 255, 255, 230), outline=(255, 105, 180, 255), width=3)
 
             # 4. Tọa độ 4 ô chứa ảnh webcam
             box_coords = [
@@ -124,7 +133,7 @@ if all(captured_list):
                 (530, 710, 900, 1240)   # Ô 4: Dưới - Phải
             ]
 
-            # 5. Fit ảnh webcam vào 4 ô
+            # 5. Fit ảnh webcam vào 4 ô với khung viền trắng hồng
             for i, img in enumerate(webcam_images):
                 box = box_coords[i]
                 bw = box[2] - box[0]
@@ -132,7 +141,7 @@ if all(captured_list):
 
                 img_fitted = ImageOps.fit(img, (bw - 24, bh - 24), method=Image.Resampling.LANCZOS)
                 
-                draw.rectangle([box[0], box[1], box[2], box[3]], fill=(25, 25, 45, 220), outline=(255, 182, 193, 255), width=6)
+                draw.rectangle([box[0], box[1], box[2], box[3]], fill=(255, 240, 245, 220), outline=(255, 105, 180, 255), width=6)
                 base_image.paste(img_fitted, (box[0] + 12, box[1] + 12), img_fitted)
 
             current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -170,8 +179,8 @@ if all(captured_list):
                 stk2 = stk2.resize((stk2_w, stk2_h), Image.Resampling.LANCZOS)
                 base_image.paste(stk2, (bg_width - stk2_w - 55, bg_height - stk2_h - 65), stk2)
 
-            st.success("🌟 Tạo siêu phẩm Photobooth cực kỳ cute thành công!")
-            st.image(base_image, caption="Thành phẩm Photobooth Siêu Cute", use_container_width=True)
+            st.success("🌟 Tạo siêu phẩm Photobooth Hồng - Trắng thành công!")
+            st.image(base_image, caption="Thành phẩm Photobooth Tone Hồng Trắng", use_container_width=True)
             
             buf = io.BytesIO()
             base_image.convert("RGB").save(buf, format="PNG")
@@ -180,7 +189,7 @@ if all(captured_list):
             st.download_button(
                 label="📥 Tải ảnh Photobooth về máy",
                 data=byte_im,
-                file_name="khanhhoa_cute_photobooth.png",
+                file_name="khanhhoa_pink_white_photobooth.png",
                 mime="image/png",
                 type="primary"
             )
