@@ -44,11 +44,30 @@ if all(captured_list):
             else:
                 base_image = Image.open(template_path).convert("RGBA")
                 
-                # 3. Tọa độ chuẩn chỉnh đã căn lại theo đúng 4 ô hồng trên khung của bạn
-                # Thứ tự: [Trên-Trái, Trên-Phải, Dưới-Trái, Dưới-Phải] tương ứng với [cam1, cam3, cam2, cam4]
-                # Hoặc theo thứ tự [cam1, cam2, cam3, cam4] (Trái trên, Trái dưới, Phải trên, Phải dưới):
+                # 3. Tọa độ 4 ô trống
                 box_coords = [
-                    (312, 238, 497, 525),  # Ảnh 1: Ô Trên-Trái
-                    (312, 574, 497, 860),  # Ảnh 2: Ô Dưới-Trái
-                    (536, 238, 722, 525),  # Ảnh 3: Ô Trên-Phải
-                    (536, 574, 722, 860)   #
+                    (312, 238, 497, 525),
+                    (312, 574, 497, 860),
+                    (536, 238, 722, 525),
+                    (536, 574, 722, 860)
+                ]
+
+                # 4. Fit và dán từng ảnh vào đúng ô
+                for i, img in enumerate(webcam_images):
+                    box = box_coords[i]
+                    bw = box[2] - box[0]
+                    bh = box[3] - box[1]
+
+                    img_fitted = ImageOps.fit(img, (bw, bh), method=Image.Resampling.LANCZOS)
+                    base_image.paste(img_fitted, (box[0], box[1]))
+
+                # 5. Hiển thị kết quả
+                st.success("✨ Ghép ảnh vào khung thành công xuất sắc!")
+                st.image(base_image, caption="Khung Photobooth của bạn", use_container_width=True)
+                
+                # Nút tải ảnh
+                buf = io.BytesIO()
+                base_image.convert("RGB").save(buf, format="PNG")
+                byte_im = buf.getvalue()
+
+                st.download
