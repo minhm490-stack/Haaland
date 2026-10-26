@@ -64,7 +64,7 @@ if all(captured_list):
         try:
             webcam_images = []
             for f in captured_list:
-                f.seek(0.0)
+                f.seek(0)
                 img_cam = Image.open(f).convert("RGBA")
                 img_cam_clean = remove_white_background(img_cam, threshold=240)
                 webcam_images.append(img_cam_clean)
@@ -80,8 +80,8 @@ if all(captured_list):
                 b = int(240 - (y / bg_height) * 30)
                 draw.line([(0, y), (bg_width, y)], fill=(r, g, b, 255))
 
-            # 2. Thêm vô số chi tiết bong bóng, ngôi sao và đốm sáng trang trí nền lung linh
-            random.seed(42)  # Cố định vị trí các chi tiết cho đẹp mắt
+            # 2. Thêm các chi tiết bong bóng và ngôi sao trang trí nền
+            random.seed(42)
             for _ in range(35):
                 rx = random.randint(20, bg_width - 20)
                 ry = random.randint(20, bg_height - 20)
@@ -94,7 +94,6 @@ if all(captured_list):
                 ])
                 draw.ellipse([rx - rad, ry - rad, rx + rad, ry + rad], fill=color)
 
-            # Vẽ thêm các ngôi sao lấp lánh ở 4 góc viền
             star_positions = [(65, 65), (935, 65), (65, 1235), (935, 1235), (500, 50), (500, 1250)]
             for sp in star_positions:
                 draw_star(draw, sp, size=12, fill_color=(255, 255, 0, 240))
@@ -131,19 +130,18 @@ if all(captured_list):
 
                 img_fitted = ImageOps.fit(img, (bw - 24, bh - 24), method=Image.Resampling.LANCZOS)
                 
-                # Vẽ viền neon cyan cho từng ô chứa ảnh
                 draw.rectangle([box[0], box[1], box[2], box[3]], fill=(15, 15, 35, 220), outline=(0, 255, 255, 255), width=6)
                 base_image.paste(img_fitted, (box[0] + 12, box[1] + 12), img_fitted)
 
             current_dir = os.path.dirname(os.path.abspath(__file__))
 
-            # 6. Xóa nền và chèn Bạch Tuộc vào giữa giao điểm
+            # 6. Xóa nền và chèn Bạch Tuộc vào giữa giao điểm (dùng chia lấy nguyên // cho kích thước)
             octopus_path = os.path.join(current_dir, "bach_tuoc.png")
             if os.path.exists(octopus_path):
                 octo_img = Image.open(octopus_path).convert("RGBA")
                 octo_img = remove_white_background(octo_img)
                 octo_w = 210
-                octo_h = int(octo_w * octo_img.height / octo_img.width)
+                octo_h = int(octo_w * octo_img.height // octo_img.width)
                 octo_img = octo_img.resize((octo_w, octo_h), Image.Resampling.LANCZOS)
                 
                 octo_x = (bg_width - octo_w) // 2
@@ -156,7 +154,7 @@ if all(captured_list):
                 stk1 = Image.open(sticker1_path).convert("RGBA")
                 stk1 = remove_white_background(stk1)
                 stk1_w = 170
-                stk1_h = int(stk1_w * stk1.height / stk1.width)
+                stk1_h = int(stk1_w * stk1.height // stk1.width)
                 stk1 = stk1.resize((stk1_w, stk1_h), Image.Resampling.LANCZOS)
                 base_image.paste(stk1, (55, 65), stk1)
 
@@ -166,7 +164,7 @@ if all(captured_list):
                 stk2 = Image.open(sticker2_path).convert("RGBA")
                 stk2 = remove_white_background(stk2)
                 stk2_w = 170
-                stk2_h = int(stk2_w * stk2.height / stk2.width)
+                stk2_h = int(stk2_w * stk2.height // stk2.width)
                 stk2 = stk2.resize((stk2_w, stk2_h), Image.Resampling.LANCZOS)
                 base_image.paste(stk2, (bg_width - stk2_w - 55, bg_height - stk2_h - 65), stk2)
 
