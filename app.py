@@ -42,7 +42,10 @@ if all(captured_list):
             else:
                 base_image = Image.open(template_path).convert("RGBA")
                 
-                # Tọa độ chuẩn 4 ô chữ nhật đứng (y_min, x_min, y_max, x_max) khớp hoàn toàn với khung mới
+                # Lấy kích thước gốc của khung để đồng bộ tỉ lệ tuyệt đối
+                base_w, base_h = base_image.size
+
+                # Tọa độ 4 ô chữ nhật đứng chuẩn xác (y_min, x_min, y_max, x_max)
                 box_coords = [
                     (275, 305, 475, 500),  # Ô trên - trái
                     (275, 560, 475, 755),  # Ô trên - phải
@@ -53,30 +56,15 @@ if all(captured_list):
                 for i, img in enumerate(webcam_images):
                     y_min, x_min, y_max, x_max = box_coords[i]
                     
-                    # Tính chính xác chiều rộng và chiều cao của khung hình chữ nhật
+                    # Tính toán chính xác chiều rộng và chiều cao của khung hình chữ nhật
                     bw = x_max - x_min
                     bh = y_max - y_min
 
-                    # Fit ảnh webcam theo đúng tỉ lệ và kích thước của ô khung
-                    img_fitted = ImageOps.fit(img, (bw, bh), method=Image.Resampling.LANCZOS)
+                    # Fit ảnh webcam theo đúng tỉ lệ (width, height) của ô khung với độ nét cao (LANCZOS)
+                    img_fitted = ImageOps.fit(img, (bw, bh), method=Image.Resampling.LANCZOS, centering=(0.5, 0.5))
                     
-                    # Dán ảnh vào đúng tọa độ (x_min, y_min) trên khung nền
+                    # Dán ảnh vào đúng vị trí (x_min, y_min) trên khung nền
                     base_image.paste(img_fitted, (x_min, y_min))
 
                 st.success("Ghép ảnh thành công!")
-                st.image(base_image, caption="Photobooth của bạn", use_container_width=True)
-                
-                buf = io.BytesIO()
-                base_image.convert("RGB").save(buf, format="PNG")
-                byte_im = buf.getvalue()
-
-                st.download_button(
-                    label="Tải ảnh về máy",
-                    data=byte_im,
-                    file_name="photobooth.png",
-                    mime="image/png",
-                    type="primary"
-                )
-
-        except Exception as e:
-            st.error(f"Lỗi: {e}")
+                st.image(base_image, caption="Photobooth của bạn", use_container_width=True
