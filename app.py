@@ -42,12 +42,35 @@ if all(captured_list):
             else:
                 base_image = Image.open(template_path).convert("RGBA")
                 
-                # Tọa độ chuẩn xác mới khớp hoàn toàn với 4 ô trống của khung mới
                 box_coords = [
-                    (247, 270, 485, 492),  # Ô 1: Trên - Trái
-                    (521, 270, 759, 492),  # Ô 2: Trên - Phải
-                    (247, 532, 485, 754),  # Ô 3: Dưới - Trái
-                    (521, 532, 759, 754)   # Ô 4: Dưới - Phải
+                    (247, 270, 485, 492),
+                    (521, 270, 759, 492),
+                    (247, 532, 485, 754),
+                    (521, 532, 759, 754)
                 ]
 
-                for i
+                for i, img in enumerate(webcam_images):
+                    box = box_coords[i]
+                    bw = box[2] - box[0]
+                    bh = box[3] - box[1]
+
+                    img_fitted = ImageOps.fit(img, (bw, bh), method=Image.Resampling.LANCZOS)
+                    base_image.paste(img_fitted, (box[0], box[1]))
+
+                st.success("Ghep anh thanh cong!")
+                st.image(base_image, caption="Photobooth của bạn", use_container_width=True)
+                
+                buf = io.BytesIO()
+                base_image.convert("RGB").save(buf, format="PNG")
+                byte_im = buf.getvalue()
+
+                st.download_button(
+                    label="Tai anh ve may",
+                    data=byte_im,
+                    file_name="photobooth.png",
+                    mime="image/png",
+                    type="primary"
+                )
+
+        except Exception as e:
+            st.error(f"Loi: {e}")
