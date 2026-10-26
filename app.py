@@ -35,7 +35,7 @@ if all(captured_list):
                 f.seek(0)
                 webcam_images.append(Image.open(f).convert("RGBA"))
 
-            # 2. Mở file khung nền (khung.png phải nằm cùng thư mục trên GitHub)
+            # 2. Mở file khung nền
             current_dir = os.path.dirname(os.path.abspath(__file__))
             template_path = os.path.join(current_dir, "khung.png")
             
@@ -44,43 +44,11 @@ if all(captured_list):
             else:
                 base_image = Image.open(template_path).convert("RGBA")
                 
-                # 3. Tọa độ chính xác cho 4 ô trống trong khung của bạn (Thứ tự: Trên-Trái, Dưới-Trái, Trên-Phải, Dưới-Phải)
-                # (x_start, y_start, x_end, y_end)
+                # 3. Tọa độ chuẩn chỉnh đã căn lại theo đúng 4 ô hồng trên khung của bạn
+                # Thứ tự: [Trên-Trái, Trên-Phải, Dưới-Trái, Dưới-Phải] tương ứng với [cam1, cam3, cam2, cam4]
+                # Hoặc theo thứ tự [cam1, cam2, cam3, cam4] (Trái trên, Trái dưới, Phải trên, Phải dưới):
                 box_coords = [
-                    (304, 235, 477, 529),  # Ô 1: Trên Trái
-                    (304, 584, 477, 873),  # Ô 2: Dưới Trái
-                    (534, 235, 706, 529),  # Ô 3: Trên Phải
-                    (534, 584, 706, 873)   # Ô 4: Dưới Phải
-                ]
-
-                # 4. Fit và dán từng ảnh vào từng ô
-                for i, img in enumerate(webcam_images):
-                    box = box_coords[i]
-                    bw = box[2] - box[0]
-                    bh = box[3] - box[1]
-
-                    # Cắt và điều chỉnh ảnh vừa khít ô
-                    img_fitted = ImageOps.fit(img, (bw, bh), method=Image.Resampling.LANCZOS)
-                    
-                    # Dán ảnh lên khung
-                    base_image.paste(img_fitted, (box[0], box[1]))
-
-                # 5. Hiển thị kết quả thành công
-                st.success("✨ Ghép ảnh vào khung thành công xuất sắc!")
-                st.image(base_image, caption="Khung Photobooth của bạn", use_container_width=True)
-                
-                # Nút tải ảnh
-                buf = io.BytesIO()
-                base_image.convert("RGB").save(buf, format="PNG")
-                byte_im = buf.getvalue()
-
-                st.download_button(
-                    label="📥 Tải ảnh Photobooth về máy",
-                    data=byte_im,
-                    file_name="khanhhoa_graffiti_photobooth.png",
-                    mime="image/png",
-                    type="primary"
-                )
-
-        except Exception as e:
-            st.error(f"Đã xảy ra lỗi trong quá trình xử lý ảnh: {e}")
+                    (312, 238, 497, 525),  # Ảnh 1: Ô Trên-Trái
+                    (312, 574, 497, 860),  # Ảnh 2: Ô Dưới-Trái
+                    (536, 238, 722, 525),  # Ảnh 3: Ô Trên-Phải
+                    (536, 574, 722, 860)   #
